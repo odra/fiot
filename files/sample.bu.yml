@@ -1,0 +1,13 @@
+variant: fiot
+version: 1.0.0
+passwd:
+  users:
+    - name: linaro
+      ssh_authorized_keys:
+        - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDEXoGTOQJ6PNxK4aRkaUmBbnNwnPgjEy3CrraSYpgOhHQyOq9vsgY9c7YfIG9X+RzgO+Kq5Z8SNgph3h+fRkUfj1YYmhRGKTsu4PI3yKeeVx+iz4kYM1B5oElDVAD5LCNTgz4JPvuzZwTmpuUPcrT6tiZuj0wq6/qxd86ZHzNX8FLgYIMeSB6VG8dStEEAc/dA7CN1bhMm1Inq+OLtLdx13leVE9BE0qF/AC+uVoOBha3Nvcic3Cg0IWTeCMUj3sgsT5rA54DJ6An832OJCHzp0SChRsulXXOautQpMAKuNIm9mQgJaXFqRjkPTWejSNbgZOqIkPaBcdty9M/rkzmUV4zc3AkwbHh0g8zFuCqBIHM1J+XXG8aKLStqm8LE3nThylHBEbEjardKh3+pMZyV+v+6QJ5YOj2OYPpCC1QndOuuSsfDeuH+2TvTU9IwUKYoY+/cQBjN2FjboPaygKKwddzcuFqfJIUAQ+ymMCW259eBBtCYghduhverrSAnMzc=
+      password_hash: $y$j9T$olUSETaDLCJKUruqc5Mw//$tpZilM1CISsKPHGeZYnerBDg3AmS0ZeYqVK49c13o51
+      home_dir: /home/linaro
+      no_create_home: false
+      groups:
+        - wheel
+      shell: /bin/bash

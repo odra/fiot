@@ -1,0 +1,16 @@
+#!/bin/bash
+SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
+
+SUBCMD="$1"
+
+if [ -z ${SUBCMD} ]; then
+    echo '[ERR] Provide a subcommand to run.'
+    exit 1
+fi
+
+if [ ! -f "${SCRIPT_DIR}/fiot-${SUBCMD}" ]; then
+    echo "[ERR] Invalid subcommand: ${SUBCMD}."
+    exit 1
+fi
+
+${SCRIPT_DIR}/fiot-${SUBCMD} ${@:2}

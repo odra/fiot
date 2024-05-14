@@ -1,0 +1,49 @@
+#!/bin/bash
+LIB_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )/../lib
+
+source ${LIB_DIR}/img.sh
+
+OUTPUT_DIR=./output
+
+
+show_help() {
+    echo 'Help me!'
+}
+
+
+ARG_LIST=(
+    "output-dir"
+)
+opts=$(getopt \
+  --longoptions "$(printf "help,%s:," "${ARG_LIST[@]}")" \
+  --name "$(basename "$0")" \
+  --options "" \
+  -- "$@"
+)
+
+eval set --"${opts}"
+
+while [[ $# -gt 0 ]]; do
+    case "$1" in
+        --help)
+            show_help
+            exit 0
+            ;;
+        --output-dir)
+            OUTPUT_DIR="${2}"
+            shift 2
+            ;;
+        *)
+            break
+            ;;
+    esac
+done
+
+img::run "${OUTPUT_DIR}/disk.qcow2"
+if [ "$?" -ne 0 ]; then
+    echo "[ERR] Failed to run image ${OUTPUT_DIR}/disk.qcow2."
+    exit $?
+fi
+
+# -fw_cfg name=opt/com.coreos/config,file=sample.ign.json \
+

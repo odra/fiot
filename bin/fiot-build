@@ -1,0 +1,85 @@
+#!/bin/bash
+LIB_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )/../lib
+
+source ${LIB_DIR}/net.sh
+source ${LIB_DIR}/img.sh
+
+OUTPUT_DIR=./output
+ISO_URL=https://dl.fedoraproject.org/pub/alt/iot/40/IoT/x86_64/iso/Fedora-IoT-provisioner-40-20240422.3.x86_64.iso
+DISK_SIZE=30G
+
+show_help() {
+    echo "help me!"
+}
+
+ARG_LIST=(
+    "output-dir"
+    "iso-url"
+    "disk-size"
+)
+opts=$(getopt \
+  --longoptions "$(printf "help,%s:," "${ARG_LIST[@]}")" \
+  --name "$(basename "$0")" \
+  --options "" \
+  -- "$@"
+)
+
+eval set --"${opts}"
+
+while [[ $# -gt 0 ]]; do
+    case "$1" in
+        --help)
+            show_help
+            exit 0
+            ;;
+        --output-dir)
+            OUTPUT_DIR="${2}"
+            shift 2
+            ;;
+        --iso-url)
+            ISO_URL="${2}"
+            shift 2
+            ;;
+        --disk-size)
+            DISK_SIZE="${2}"
+            shift 2
+            ;;
+        *)
+            break
+            ;;
+    esac
+done
+
+echo "[INFO] Using output dir: ${OUTPUT_DIR}"
+
+if [ ! -d ${OUTPUT_DIR} ]; then
+    mkdir -p ${OUTPUT_DIR}
+fi
+
+# download image to $OUTPUT_DIR/image.iso
+net::download "${ISO_URL}" "${OUTPUT_DIR}/image.iso"
+if [ "$?" -ne 0 ]; then
+    echo "[ERR] Failed to donwload ISO: ${ISO_URL}"
+    exit $?
+fi
+
+# convert downloaded iso file to qcow2
+img::convert "${OUTPUT_DIR}/image.iso"  "${OUTPUT_DIR}/image.qcow2"
+if [ "$?" -ne 0 ]; then
+    echo "[ERR] Failed to convert image file ${OUTPUT_DIR}/image.iso to ${OUTPUT_DIR}/image.qcow2"
+    exit $?
+fi
+
+# creates an empty disk to install fedora iot
+img::create_disk "${OUTPUT_DIR}/disk.qcow2" "${DISK_SIZE}"
+if [ "$?" -ne 0 ]; then
+    echo "[ERR] Failed create image disk ${OUTPUT_DIR}/disk.qcow2"
+    exit $?
+fi
+
+# install Fedora IoT in an empty qcow2 file
+img::install "${OUTPUT_DIR}/image.qcow2" "${OUTPUT_DIR}/disk.qcow2"
+if [ "$?" -ne 0 ]; then
+    echo '[ERR] Failed to install Fedora IoT.'
+    exit $?
+fi
